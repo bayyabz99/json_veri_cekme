@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON → Virgülle Ayrılmış Kullanıcı Adları</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header p {
+            font-size: 1rem;
+            opacity: 0.95;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            margin-bottom: 20px;
+        }
+
+        .input-section {
+            margin-bottom: 25px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #555;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-input-wrapper input[type="file"] {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .file-input-button {
+            display: block;
+            padding: 12px 20px;
+            background: #667eea;
+            color: white;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .file-input-button:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+
+        .url-input {
+            display: flex;
+            gap: 10px;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border 0.3s;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: #48bb78;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #38a169;
+        }
+
+        .btn-info {
+            background: #4299e1;
+            color: white;
+        }
+
+        .btn-info:hover {
+            background: #3182ce;
+        }
+
+        .options {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .output-section {
+            display: none;
+        }
+
+        .output-section.active {
+            display: block;
+        }
+
+        .stats {
+            background: #f7fafc;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .stat-icon {
+            font-size: 20px;
+        }
+
+        .stat-text {
+            font-size: 14px;
+            color: #555;
+        }
+
+        .stat-value {
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .output-box {
+            background: #f7fafc;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            min-height: 100px;
+            margin-bottom: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            word-wrap: break-word;
+            overflow-x: auto;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            background: #fed7d7;
+            color: #c53030;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .error.active {
+            display: block;
+        }
+
+        .success {
+            background: #c6f6d5;
+            color: #22543d;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .success.active {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .url-input {
+                flex-direction: column;
+            }
+
+            .actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 JSON → Kullanıcı Adları</h1>
+            <p>Instagram veya diğer JSON dosyalarından kullanıcı adlarını çıkarın</p>
+        </div>
+
+        <div class="card">
+            <div class="input-section">
+                <div class="input-group">
+                    <label>📁 JSON Dosyası Yükle</label>
+                    <div class="file-input-wrapper">
+                        <input type="file" id="fileInput" accept=".json" aria-label="JSON dosyası seç">
+                        <div class="file-input-button">Dosya Seç</div>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin: 20px 0; color: #999;">veya</div>
+
+                <div class="input-group">
+                    <label>🔗 JSON URL'si</label>
+                    <div class="url-input">
+                        <input type="text" id="urlInput" placeholder="https://example.com/data.json" aria-label="JSON URL girin">
+                        <button class="btn btn-primary" id="fetchBtn">Getir</button>
+                    </div>
+                </div>
+
+                <div class="options">
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="lowercaseCheck" checked>
+                        <label for="lowercaseCheck">Küçük harfe çevir</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="dedupeCheck" checked>
+                        <label for="dedupeCheck">Tekrarları kaldır</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>JSON işleniyor...</p>
+            </div>
+
+            <div class="error" id="error"></div>
+            <div class="success" id="success"></div>
+
+            <div class="output-section" id="outputSection">
+                <div class="stats" id="stats"></div>
+                <div class="output-box" id="output"></div>
+                <div class="actions">
+                    <button class="btn btn-success" id="copyBtn">📋 Kopyala</button>
+                    <button class="btn btn-info" id="downloadTxtBtn">💾 TXT İndir</button>
+                    <button class="btn btn-info" id="downloadCsvBtn">📊 CSV İndir</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let extractedUsernames = [];
+        let fileName = 'usernames';
+
+        const fileInput = document.getElementById('fileInput');
+        const urlInput = document.getElementById('urlInput');
+        const fetchBtn = document.getElementById('fetchBtn');
+        const loading = document.getElementById('loading');
+        const error = document.getElementById('error');
+        const success = document.getElementById('success');
+        const outputSection = document.getElementById('outputSection');
+        const output = document.getElementById('output');
+        const stats = document.getElementById('stats');
+        const copyBtn = document.getElementById('copyBtn');
+        const downloadTxtBtn = document.getElementById('downloadTxtBtn');
+        const downloadCsvBtn = document.getElementById('downloadCsvBtn');
+        const lowercaseCheck = document.getElementById('lowercaseCheck');
+        const dedupeCheck = document.getElementById('dedupeCheck');
+
+        fileInput.addEventListener('change', handleFileUpload);
+        fetchBtn.addEventListener('click', handleUrlFetch);
+        copyBtn.addEventListener('click', copyToClipboard);
+        downloadTxtBtn.addEventListener('click', downloadTxt);
+        downloadCsvBtn.addEventListener('click', downloadCsv);
+
+        function showLoading() {
+            loading.classList.add('active');
+            error.classList.remove('active');
+            success.classList.remove('active');
+            outputSection.classList.remove('active');
+        }
+
+        function hideLoading() {
+            loading.classList.remove('active');
+        }
+
+        function showError(message) {
+            error.textContent = message;
+            error.classList.add('active');
+            hideLoading();
+        }
+
+        function showSuccess(message) {
+            success.textContent = message;
+            success.classList.add('active');
+            setTimeout(() => success.classList.remove('active'), 3000);
+        }
+
+        function handleFileUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            fileName = file.name.replace('.json', '');
+            const reader = new FileReader();
+
+            showLoading();
+
+            reader.onload = function(event) {
+                try {
+                    const jsonData = JSON.parse(event.target.result);
+                    processJson(jsonData);
+                } catch (err) {
+                    showError('Geçersiz JSON dosyası: ' + err.message);
+                }
+            };
+
+            reader.onerror = function() {
+                showError('Dosya okuma hatası');
+            };
+
+            reader.readAsText(file);
+        }
+
+        async function handleUrlFetch() {
+            const url = urlInput.value.trim();
+            if (!url) {
+                showError('Lütfen bir URL girin');
+                return;
+            }
+
+            showLoading();
+
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error('URL\'den veri alınamadı: ' + response.status);
+                }
+                const jsonData = await response.json();
+                fileName = 'fetched_data';
+                processJson(jsonData);
+            } catch (err) {
+                showError('Fetch hatası: ' + err.message);
+            }
+        }
+
+        function processJson(data) {
+            try {
+                const usernames = extractUsernames(data);
+                
+                if (usernames.length === 0) {
+                    showError('JSON içinde kullanıcı adı bulunamadı. Desteklenen alanlar: title, username, handle, name');
+                    return;
+                }
+
+                let processed = usernames.map(u => {
+                    let cleaned = u.trim();
+                    if (cleaned.startsWith('@')) {
+                        cleaned = cleaned.substring(1);
+                    }
+                    return cleaned;
+                });
+
+                if (lowercaseCheck.checked) {
+                    processed = processed.map(u => u.toLowerCase());
+                }
+
+                if (dedupeCheck.checked) {
+                    processed = [...new Set(processed)];
+                }
+
+                extractedUsernames = processed;
+                displayResults();
+                hideLoading();
+            } catch (err) {
+                showError('JSON işleme hatası: ' + err.message);
+            }
+        }
+
+        function extractUsernames(data) {
+            const usernames = [];
+
+            function traverse(obj) {
+                if (Array.isArray(obj)) {
+                    obj.forEach(item => traverse(item));
+                } else if (typeof obj === 'object' && obj !== null) {
+                    // Check for common username fields
+                    if (obj.title && typeof obj.title === 'string') {
+                        usernames.push(obj.title);
+                    } else if (obj.username && typeof obj.username === 'string') {
+                        usernames.push(obj.username);
+                    } else if (obj.handle && typeof obj.handle === 'string') {
+                        usernames.push(obj.handle);
+                    } else if (obj.name && typeof obj.name === 'string' && !obj.title && !obj.username) {
+                        usernames.push(obj.name);
+                    }
+                    
+                    // Traverse nested objects
+                    Object.values(obj).forEach(value => traverse(value));
+                } else if (typeof obj === 'string' && obj.length > 0 && obj.length < 50) {
+                    // If it's a standalone string in an array, might be a username
+                    if (!obj.includes(' ') && !obj.includes('http')) {
+                        usernames.push(obj);
+                    }
+                }
+            }
+
+            traverse(data);
+            return usernames;
+        }
+
+        function displayResults() {
+            const result = extractedUsernames.join(', ');
+            output.textContent = result;
+
+            stats.innerHTML = `
+                <div class="stat-item">
+                    <span class="stat-icon">📄</span>
+                    <span class="stat-text">Dosya: <span class="stat-value">${fileName}</span></span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-icon">👥</span>
+                    <span class="stat-text">Toplam: <span class="stat-value">${extractedUsernames.length}</span> kullanıcı</span>
+                </div>
+            `;
+
+            outputSection.classList.add('active');
+        }
+
+        function copyToClipboard() {
+            const text = extractedUsernames.join(', ');
+            navigator.clipboard.writeText(text).then(() => {
+                showSuccess('✅ Panoya kopyalandı!');
+            }).catch(() => {
+                showError('Kopyalama başarısız');
+            });
+        }
+
+        function downloadTxt() {
+            const text = extractedUsernames.join(', ');
+            const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+            downloadFile(blob, `${fileName}_usernames.txt`);
+            showSuccess('✅ TXT dosyası indirildi!');
+        }
+
+        function downloadCsv() {
+            // UTF-8 BOM for Excel compatibility
+            const bom = '\uFEFF';
+            const csvContent = bom + extractedUsernames.join('\n');
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8' });
+            downloadFile(blob, `${fileName}_usernames.csv`);
+            showSuccess('✅ CSV dosyası indirildi!');
+        }
+
+        function downloadFile(blob, filename) {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>
